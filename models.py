@@ -15,12 +15,10 @@ class User(db.Model):
                    autoincrement=True)
 
     first_name = db.Column(db.String(50),  # string with max len of 50 chars
-                     nullable=False,
-                     unique=True)
+                     nullable=False)
     
     last_name = db.Column(db.String(50),  # string with max len of 50 chars
-                     nullable=False,
-                     unique=True)
+                     nullable=False)
 
     image_url = db.Column(db.String(200), nullable=False)
 

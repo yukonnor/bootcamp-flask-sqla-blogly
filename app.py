@@ -95,7 +95,7 @@ def edit_user(user_id):
     return redirect(f'/users')
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
-def delete(user_id):
+def delete_user(user_id):
 
     user_to_delete = User.query.get_or_404(user_id)
 
