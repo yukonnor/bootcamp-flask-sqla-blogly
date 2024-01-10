@@ -13,7 +13,6 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
-app.app_context().push()
 
 @app.route('/')
 def home():

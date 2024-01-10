@@ -10,38 +10,50 @@ app.config['SQLALCHEMY_ECHO'] = False
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
 
-# This is a bit of hack, but don't use Flask DebugToolbar
+# Don't use Flask DebugToolbar when testing
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-db.drop_all()
-db.create_all()
+with app.test_request_context():
+    db.drop_all()
+    db.create_all()
 
 
 class BloglyViewsTests(TestCase):
-    """Tests for views for Pets."""
+    """Tests for views for Users."""
 
     def setUp(self):
-        """Add sample pet."""
 
-        # Delete all data in the pets table to start fresh.
-        User.query.delete()
+        with app.test_request_context():
 
-        user1 = User(first_name="User", last_name="One", image_url="https://images.unsplash.com/photo-1620336655052-b57986f5a26a?q=80&w=250")
-        user2 = User(first_name="User", last_name="Two")
+            # DEBGUGGING
+            print(f"SQLALCHEMY_DATABASE_URI (before): {app.config['SQLALCHEMY_DATABASE_URI']}")
+            print(f"SQLALCHEMY_ECHO (before): {app.config['SQLALCHEMY_ECHO']}")
+            
+            # Delete all data in the users table to start fresh.
+            User.query.delete()
 
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.commit()
+            user1 = User(first_name="User", last_name="One", image_url="https://images.unsplash.com/photo-1620336655052-b57986f5a26a")
+            user2 = User(first_name="User", last_name="Two")
 
-        self.user1 = user1
-        self.user2 = user2
+            db.session.add(user1)
+            db.session.add(user2)
+            db.session.commit()
+
+            self.user1 = user1
+            self.user2 = user2
+
+            # DEBGUGGING
+            print(f"SQLALCHEMY_DATABASE_URI (after): {app.config['SQLALCHEMY_DATABASE_URI']}")
+            print(f"SQLALCHEMY_ECHO (after): {app.config['SQLALCHEMY_ECHO']}")
 
     def tearDown(self):
         """Clean up any fouled transaction."""
 
-        db.session.rollback()
+        with app.test_request_context():
+            db.session.rollback()
 
     def test_home(self):
+    
         with app.test_client() as client:
             resp = client.get("/", follow_redirects=True)
             html = resp.get_data(as_text=True)
@@ -67,7 +79,7 @@ class BloglyViewsTests(TestCase):
 
     def test_create_user(self):
         with app.test_client() as client:
-            d = {"first_name": "Created", "last_name": "Viaform"}
+            d = {"first_name": "Created", "last_name": "Viaform", "image_url": ""}
             resp = client.post("/users/new", data=d, follow_redirects=True)
             html = resp.get_data(as_text=True)
 
@@ -87,7 +99,7 @@ class BloglyViewsTests(TestCase):
 
     def test_show_user_detail_page_default_img(self):
         with app.test_client() as client:
-            resp = client.get(f"/users/{self.user2_id}")
+            resp = client.get(f"/users/{self.user2.id}")
             html = resp.get_data(as_text=True)
 
             default_image_url = User.get_default_image()
@@ -106,7 +118,7 @@ class BloglyViewsTests(TestCase):
 
     def test_edit_user(self):
         with app.test_client() as client:
-            d = {"first_name": "Edited", "last_name": "Viaform"}
+            d = {"first_name": "Edited", "last_name": "Viaform", "image_url": ""}
             resp = client.post(f"/users/{self.user1.id}/edit", data=d, follow_redirects=True)
             html = resp.get_data(as_text=True)
 
