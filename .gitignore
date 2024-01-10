@@ -1,0 +1,4 @@
+venv/
+.prettierignore
+__pycache__/
+*.pyc
