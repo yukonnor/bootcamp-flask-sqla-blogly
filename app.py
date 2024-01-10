@@ -67,7 +67,9 @@ def show_edit_user_form(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    return render_template('create-user.html', user=user)
+    user.hide_default_image()
+
+    return render_template('edit-user.html', user=user)
 
 @app.route('/users/<int:user_id>/edit', methods=["POST"])
 def edit_user(user_id):

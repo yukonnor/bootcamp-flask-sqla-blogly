@@ -22,7 +22,12 @@ class User(db.Model):
                      nullable=False,
                      unique=True)
 
-    image_url = db.Column(db.String(200), nullable=False, default=self.get_default_image())
+    image_url = db.Column(db.String(200), nullable=False)
+
+    def __init__(self, first_name, last_name, image_url=None, **kwargs):
+        if image_url is None:
+            image_url = self.get_default_image()
+        super().__init__(first_name=first_name, last_name=last_name, image_url=image_url, **kwargs)
 
     @classmethod
     def get_default_image(cls):
@@ -36,6 +41,11 @@ class User(db.Model):
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    def hide_default_image(self):
+        if self.image_url == self.get_default_image():
+            self.image_url = ""
+
 
 
 
