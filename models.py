@@ -22,7 +22,13 @@ class User(db.Model):
                      nullable=False,
                      unique=True)
 
-    image_url = db.Column(db.String(200), nullable=False, default="https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg")
+    image_url = db.Column(db.String(200), nullable=False, default=self.get_default_image())
+
+    @classmethod
+    def get_default_image(cls):
+        default_img_url="https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"
+        
+        return default_img_url
 
     def __repr__(self):
         u = self
@@ -30,6 +36,7 @@ class User(db.Model):
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+
 
 
                      
