@@ -33,8 +33,6 @@ class BloglyViewsTests(TestCase):
         db.session.add(user2)
         db.session.commit()
 
-        self.user1_id = user1.id
-        self.user2_id = user2.id
         self.user1 = user1
         self.user2 = user2
 
@@ -53,7 +51,7 @@ class BloglyViewsTests(TestCase):
     
     def test_list_users(self):
         with app.test_client() as client:
-            resp = client.get("/", follow_redirects=True)
+            resp = client.get("/users")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
@@ -61,7 +59,7 @@ class BloglyViewsTests(TestCase):
 
     def test_show_create_user_form(self):
         with app.test_client() as client:
-            resp = client.get("/", follow_redirects=True)
+            resp = client.get("/users/new", follow_redirects=True)
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
@@ -73,17 +71,55 @@ class BloglyViewsTests(TestCase):
             resp = client.post("/users/new", data=d, follow_redirects=True)
             html = resp.get_data(as_text=True)
 
+            user3 = User.query.filter_by(first_name='Created').one()
+
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('<a href="/users/3">Created Viaform</a>', html) # Note: probably best to avoid hard coding "3" here
+            self.assertIn(f'<a href="/users/{user3.id}">Created Viaform</a>', html) 
 
     def test_show_user_detail_page(self):
         with app.test_client() as client:
-            resp = client.get(f"/users/{self.user1_id}")
+            resp = client.get(f"/users/{self.user1.id}")
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1>User One</h1>', html)
-            self.assertIn('https://images.unsplash.com/photo-1620336655052-b57986f5a26a?q=80&w=250', html)
+            self.assertIn(self.user1.image_url, html)
+
+    def test_show_user_detail_page_default_img(self):
+        with app.test_client() as client:
+            resp = client.get(f"/users/{self.user2_id}")
+            html = resp.get_data(as_text=True)
+
+            default_image_url = User.get_default_image()
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>User Two</h1>', html)
+            self.assertIn(default_image_url, html)
+
+    def test_show_edit_user_form(self):
+        with app.test_client() as client:
+            resp = client.get(f"/users/{self.user1.id}/edit", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>Edit User</h1>', html)
+
+    def test_edit_user(self):
+        with app.test_client() as client:
+            d = {"first_name": "Edited", "last_name": "Viaform"}
+            resp = client.post(f"/users/{self.user1.id}/edit", data=d, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(f'<a href="/users/{self.user1.id}">Edited Viaform</a>', html) 
+
+    def test_delete_user(self):
+        with app.test_client() as client:
+            resp = client.post(f"/users/{self.user1.id}/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(f'<a href="/users/{self.user1.id}">{self.user1.first_name} {self.user1.last_name}</a>', html) 
             
 
     
