@@ -129,3 +129,11 @@ def create_post(user_id):
         flash(f"Something went wrong :/", "warning")
 
     return redirect(f'/users/{user_id}')
+
+@app.route('/posts/<int:post_id>')
+def show_post(post_id):
+    """Show a post page"""
+
+    post = Post.query.get_or_404(post_id)
+
+    return render_template('post.html', post=post)
