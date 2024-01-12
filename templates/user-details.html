@@ -11,7 +11,7 @@
         <h1>{{user.full_name}}</h1>
       </div>
       <div class="row">
-        <a href="/users/{{user.id}}/edit"><button type="button" class="btn btn-primary">Edit</button></a>
+        <a href="/users/{{user.id}}/edit"><button type="button" class="btn btn-secondary">Edit</button></a>
         <form action="/users/{{user.id}}/delete" method="post">
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
@@ -25,6 +25,9 @@
             <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
             {% endfor %}
         </ul>
+      </div>
+      <div class="row">
+        <a href="/posts/{{user.id}}/posts/new"><button type="button" class="btn btn-primary">Add Post</button></a>
       </div>
     </div>
     

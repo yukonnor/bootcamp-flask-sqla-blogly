@@ -7,7 +7,6 @@
         <div class="form-group">
             <label for="inputFirstName">First Name</label>
             <input type="text" class="form-control" id="inputFirstName" name="first_name" placeholder="Enter first name" required>
-            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
         <div class="form-group">
             <label for="inputLastName">Last Name</label>
@@ -17,7 +16,7 @@
             <label for="inputImgURL">Profile Image URL</label>
             <input type="text" class="form-control" id="inputImgURL" name="image_url" placeholder="https://www.your-image.com">
         </div>
-        <a href="/users"><button class="btn btn-secondary">Cancel</button></a>
+        <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='/users'">Cancel</button>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
