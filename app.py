@@ -137,3 +137,29 @@ def show_post(post_id):
     post = Post.query.get_or_404(post_id)
 
     return render_template('post.html', post=post)
+
+@app.route('/posts/<int:post_id>/edit')
+def show_edit_post_form(post_id):
+    """Show a form that can be used to edit a user's post"""
+
+    post = Post.query.get_or_404(post_id)
+
+    return render_template('edit-post.html', post=post)
+
+@app.route('/posts/<int:post_id>/edit', methods=["POST"])
+def edit_post(post_id):
+    """Process the edit post form submission"""
+
+    title = request.form["title"]
+    content = request.form["content"]
+
+    post = Post.query.get_or_404(post_id)
+
+    post.title = title
+    post.content = content
+    
+    # db.session.add(post) # don't think session.add() is necessary
+    db.session.commit()
+
+    flash(f"Post updated!", "success")
+    return redirect(f'/posts/{post.id}')
