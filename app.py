@@ -2,7 +2,7 @@
 
 from flask import Flask, request, render_template,  redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
@@ -103,3 +103,29 @@ def delete_user(user_id):
 
     flash(f"User deleted!", "success")
     return redirect(f'/users')
+
+@app.route('/users/<int:user_id>/posts/new')
+def show_create_post_form(user_id):
+    """Show a form that can be used to create a new post for a user"""
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template('create-post.html', user=user)
+
+@app.route('/users/<int:user_id>/posts/new', methods=["POST"])
+def create_post(user_id):
+    """Process the create post form submission."""
+    title = request.form["title"]
+    content = request.form["content"]
+
+    new_post  = Post(title=title, content=content, user_id=user_id)
+    
+    try: 
+        db.session.add(new_post)
+        db.session.commit()
+
+        flash(f"New post created!", "success")
+    except:
+        flash(f"Something went wrong :/", "warning")
+
+    return redirect(f'/users/{user_id}')

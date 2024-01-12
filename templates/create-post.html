@@ -2,8 +2,8 @@
 {% block title %}Create Post{% endblock %} 
 {% block content %}
 <div class="container">
-    <h1>Add Post for {{user.name}}</h1>
-    <form action="/posts/{{user.id}}/posts/new" method="POST">
+    <h1>Add Post for {{user.full_name}}</h1>
+    <form action="/users/{{user.id}}/posts/new" method="POST">
         <div class="form-group">
             <label for="inpuptPostTitle">Title</label>
             <input type="text" class="form-control" id="inputFirstName" name="title" placeholder="Enter a title for your post..." required>
