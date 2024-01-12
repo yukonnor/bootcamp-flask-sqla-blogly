@@ -87,8 +87,12 @@ def edit_user(user_id):
         # use default image url if user doesn't provide
         user.image_url = User.get_default_image()
     
-    # db.session.add(user) # don't think session.add() is necessary
-    db.session.commit()
+    try: 
+        # db.session.add(user) # don't think session.add() is necessary
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
 
     flash(f"User updated!", "success")
     return redirect(f'/users')
@@ -98,10 +102,14 @@ def delete_user(user_id):
 
     user_to_delete = User.query.get_or_404(user_id)
 
-    db.session.delete(user_to_delete)
-    db.session.commit()
+    try: 
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash(f"User deleted!", "success")
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
 
-    flash(f"User deleted!", "success")
     return redirect(f'/users')
 
 @app.route('/users/<int:user_id>/posts/new')
@@ -126,6 +134,7 @@ def create_post(user_id):
 
         flash(f"New post created!", "success")
     except:
+        db.session.rollback()
         flash(f"Something went wrong :/", "warning")
 
     return redirect(f'/users/{user_id}')
@@ -158,8 +167,30 @@ def edit_post(post_id):
     post.title = title
     post.content = content
     
-    # db.session.add(post) # don't think session.add() is necessary
-    db.session.commit()
+    try: 
+        # db.session.add(post) # don't think session.add() is necessary
+        db.session.commit()
 
-    flash(f"Post updated!", "success")
+        flash(f"Post updated!", "success")
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
+
     return redirect(f'/posts/{post.id}')
+
+@app.route('/posts/<int:post_id>/delete', methods=["POST"])
+def delete_post(post_id):
+
+    post_to_delete = Post.query.get_or_404(post_id)
+    author_id = post_to_delete.user.id
+
+    db.session.delete(post_to_delete)
+    
+    try: 
+        db.session.commit()
+        flash(f"Post deleted!", "success")
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
+
+    return redirect(f'/users/{author_id}')
