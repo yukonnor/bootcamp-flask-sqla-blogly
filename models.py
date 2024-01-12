@@ -1,5 +1,6 @@
 """Models for the Blogle app"""
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -44,6 +45,45 @@ class User(db.Model):
     def hide_default_image(self):
         if self.image_url == self.get_default_image():
             self.image_url = ""
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    title = db.Column(db.String(200),  
+                    nullable=False)
+    
+    content = db.Column(db.String(5000),  
+                    nullable=False)
+    
+    created_at = db.Column(db.DateTime,
+                    nullable=False,
+                    default=datetime.now())
+
+    user_id = db.Column(db.Integer,
+                    db.ForeignKey('users.id'))
+    
+    # SQLA relationship and back reference
+    user = db.relationship('User', backref='posts')
+
+    
+    @property
+    def pretty_date(self):
+        return f"TBD"
+
+    def __repr__(self):
+        p = self
+        return f"<Post id={p.id} title={p.title} created_at={p.created_at}"
+
+
+
+
+
+                     
+
 
 
 
