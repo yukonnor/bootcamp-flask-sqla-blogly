@@ -76,7 +76,11 @@ class Post(db.Model):
     
     @property
     def pretty_date(self):
-        return f"TBD"
+        """Return the post's created at in the format: May 1, 2015, 10:30 AM"""
+
+        pretty_datetime = self.created_at.strftime("%B %d, %Y, %I:%M %p")
+        
+        return pretty_datetime
     
 
     def __repr__(self):
