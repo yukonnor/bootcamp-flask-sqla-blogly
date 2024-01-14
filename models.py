@@ -5,8 +5,10 @@ from datetime import datetime
 db = SQLAlchemy()
 
 def connect_db(app):
-    db.app = app
-    db.init_app(app)
+    with app.app_context():
+        db.app = app
+        db.init_app(app)
+        db.create_all()
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -22,6 +24,9 @@ class User(db.Model):
                      nullable=False)
 
     image_url = db.Column(db.String(200), nullable=False)
+
+    # SQLA relationship to a user's post(s)
+    posts = db.relationship('Post', cascade='all, delete-orphan')
 
     def __init__(self, first_name, last_name, image_url=None, **kwargs):
         if image_url is None:
@@ -64,10 +69,10 @@ class Post(db.Model):
                     default=datetime.now())
 
     user_id = db.Column(db.Integer,
-                    db.ForeignKey('users.id'))
+                    db.ForeignKey('users.id', ondelete='CASCADE'))
     
-    # SQLA relationship and back reference
-    user = db.relationship('User', backref='posts')
+    # SQLA relationship to a post's user
+    user = db.relationship('User')
 
     @classmethod
     def get_recent_posts(cls, limit=5):
