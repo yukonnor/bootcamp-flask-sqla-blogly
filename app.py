@@ -16,9 +16,11 @@ connect_db(app)
 
 @app.route('/')
 def home():
-    """If client navigates to root, redirect to users page"""
+    """Blogly's home page. Shows the 5 latest posts."""
+
+    recent_posts = Post.get_recent_posts()
     
-    return redirect('/users')
+    return render_template('home.html', posts=recent_posts)
 
 @app.route('/users')
 def list_users():

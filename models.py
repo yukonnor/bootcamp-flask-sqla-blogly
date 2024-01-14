@@ -69,15 +69,20 @@ class Post(db.Model):
     # SQLA relationship and back reference
     user = db.relationship('User', backref='posts')
 
+    @classmethod
+    def get_recent_posts(cls, limit=5):
+        """Class method to retrieve the 'limit' most recent posts."""
+        return cls.query.order_by(cls.created_at.desc()).limit(limit).all()
     
     @property
     def pretty_date(self):
         return f"TBD"
+    
 
     def __repr__(self):
         p = self
         return f"<Post id={p.id} title={p.title} created_at={p.created_at}"
-
+    
 
 
 
