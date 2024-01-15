@@ -71,8 +71,11 @@ class Post(db.Model):
     user_id = db.Column(db.Integer,
                     db.ForeignKey('users.id', ondelete='CASCADE'))
     
-    # SQLA relationship to a post's user
+    # relationship to a post's user
     user = db.relationship('User')
+
+    # relationship to the post's tags. 
+    post_tags = db.relationship('PostTag', backref='posts')
 
     @classmethod
     def get_recent_posts(cls, limit=5):
@@ -92,6 +95,40 @@ class Post(db.Model):
         p = self
         return f"<Post id={p.id} title={p.title} created_at={p.created_at}"
     
+class Tag(db.Model):
+    __tablename__ = 'tags'
+
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    name = db.Column(db.String(50),  
+                    nullable=False)
+    
+    # relationship to the tag's posts. 
+    tag_posts = db.relationship('PostTag', backref='tags')
+
+    def __repr__(self):
+        t = self
+        return f"<Tag id={t.id} title={t.name}"
+    
+
+class PostTag(db.Model):
+    """Join table for Posts to Tags."""
+
+    __tablename__ = "posts_tags"
+
+    post_id = db.Column(db.Integer,
+                       db.ForeignKey("posts.id"),
+                       primary_key=True)
+    
+    tag_id = db.Column(db.Integer,
+                          db.ForeignKey("tags.id"),
+                          primary_key=True)
+    
+    def __repr__(self):
+        pt = self
+        return f"<PostTag id={pt.post_id} title={pt.tag_id}"
 
 
 
