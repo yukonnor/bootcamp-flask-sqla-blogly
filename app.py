@@ -212,3 +212,26 @@ def show_tag_detail_page(tag_id):
     posts = tag.posts
 
     return render_template("tag-details.html", tag=tag, posts=posts)
+
+@app.route('/tags/new')
+def show_create_tag_form():
+    """Show a form that can be used to create a post tag"""
+
+    return render_template('create-tag.html')
+
+@app.route('/tags/new', methods=["POST"])
+def create_tag():
+    """Process the create tag form submission"""
+
+    name = request.form["name"]
+    tag = Tag(name=name)
+
+    try: 
+        db.session.add(tag)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
+
+    flash(f"New tag created!", "success")
+    return redirect(f'/tags')
