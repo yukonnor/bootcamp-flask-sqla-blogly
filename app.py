@@ -92,11 +92,11 @@ def edit_user(user_id):
     try: 
         # db.session.add(user) # don't think session.add() is necessary
         db.session.commit()
+        flash(f"User updated!", "success")
     except:
         db.session.rollback()
         flash(f"Something went wrong :/", "warning")
 
-    flash(f"User updated!", "success")
     return redirect(f'/users')
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
@@ -229,9 +229,52 @@ def create_tag():
     try: 
         db.session.add(tag)
         db.session.commit()
+        flash(f"New tag created!", "success")
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
+    
+    return redirect(f'/tags')
+
+@app.route('/tags/<int:tag_id>/edit')
+def show_edit_tag_form(tag_id):
+    """Show a form that can be used to edit a tag"""
+
+    tag = Tag.query.get_or_404(tag_id)
+
+    return render_template('edit-tag.html', tag=tag)
+
+@app.route('/tags/<int:tag_id>/edit', methods=["POST"])
+def edit_tag(tag_id):
+    """Process the edit tag form submission"""
+
+    name = request.form["name"]
+
+    tag = Tag.query.get_or_404(tag_id)
+
+    tag.name = name
+    
+    try: 
+        # db.session.add(tag) # don't think session.add() is necessary
+        db.session.commit()
+        flash(f"Tag updated!", "success")
     except:
         db.session.rollback()
         flash(f"Something went wrong :/", "warning")
 
-    flash(f"New tag created!", "success")
+    return redirect(f'/tags/{tag.id}')
+
+@app.route('/tags/<int:tag_id>/delete', methods=["POST"])
+def delete_tag(tag_id):
+
+    tag_to_delete = Tag.query.get_or_404(tag_id)
+
+    try: 
+        db.session.delete(tag_to_delete)
+        db.session.commit()
+        flash(f"Tag deleted!", "success")
+    except:
+        db.session.rollback()
+        flash(f"Something went wrong :/", "warning")
+
     return redirect(f'/tags')

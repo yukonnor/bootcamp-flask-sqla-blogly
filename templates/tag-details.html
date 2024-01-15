@@ -2,17 +2,26 @@
 {% block title %}Tag: {{tag.name}}{% endblock %} 
 {% block content %}
 <div class="container">
-  <h1>Tag: {{tag.name}}</h1>
-  <ul>
-    {% for post in posts %}
-    <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
-    {% endfor %}
-  </ul>
-  <div class="row">
-        <a href="/tags/{{tag.id}}/edit"><button type="button" class="btn btn-secondary mr-2">Edit Tag</button></a>
-        <form action="/tags/{{tag.id}}/delete" method="post">
-            <button type="submit" class="btn btn-danger">Delete Tag</button>
-        </form>
-   </div>
+  
+    <h1>Tag: {{tag.name}}</h1>
+    <ul>
+        {% for post in posts %}
+        <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="row"></div>
+        <div class="col-12 buttons">
+            <div class="btn-toolbar mt-3" role="toolbar">
+                <div class="btn-group mr-2" role="group">
+                    <a href="/tags/{{tag.id}}/edit"><button type="button" class="btn btn-secondary mr-2">Edit Tag</button></a>
+                </div>
+                <div class="btn-group" role="group" >
+                    <form action="/tags/{{tag.id}}/delete" method="post">
+                        <button type="submit" class="btn btn-danger">Delete Tag</button>
+                    </form>
+                </div>
+            </div>
+        </div> 
+  </div>
 </div>
 {% endblock %}
