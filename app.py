@@ -196,3 +196,19 @@ def delete_post(post_id):
         flash(f"Something went wrong :/", "warning")
 
     return redirect(f'/users/{author_id}')
+
+@app.route('/tags')
+def list_tags():
+    """Shows list of all tags in db"""
+    
+    tags = Tag.query.all()
+    return render_template('tags.html', tags=tags)
+
+@app.route('/tags/<int:tag_id>')
+def show_tag_detail_page(tag_id):
+    """Show a page that shows all of the posts that have the provided tag."""
+     
+    tag = Tag.query.get_or_404(tag_id)
+    posts = tag.posts
+
+    return render_template("tag-details.html", tag=tag, posts=posts)

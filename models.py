@@ -108,6 +108,10 @@ class Tag(db.Model):
     # relationship to the tag's posts. 
     tag_posts = db.relationship('PostTag', backref='tags')
 
+    posts = db.relationship('Post',
+                            secondary='posts_tags',
+                            backref='tags')
+
     def __repr__(self):
         t = self
         return f"<Tag id={t.id} title={t.name}"

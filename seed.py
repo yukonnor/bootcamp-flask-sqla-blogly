@@ -29,11 +29,11 @@ with app.app_context():
     db.session.commit()
 
     # Add post tags
-    t1 = Tag(name='city_planning', 
+    t1 = Tag(name='City Planning', 
              tag_posts=[PostTag(post_id=1),
                         PostTag(post_id=2),
                         PostTag(post_id=3)])
-    t2 = Tag(name='agriculture',
+    t2 = Tag(name='Agriculture',
              tag_posts=[PostTag(post_id=1),
                         PostTag(post_id=4),
                         PostTag(post_id=5)])
