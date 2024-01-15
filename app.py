@@ -146,6 +146,7 @@ def show_post(post_id):
     """Show a post page"""
 
     post = Post.query.get_or_404(post_id)
+    print(f"\nPost Tags: {post.tags}")
 
     return render_template('post.html', post=post)
 

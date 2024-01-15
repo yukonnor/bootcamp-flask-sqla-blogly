@@ -10,6 +10,14 @@
         <p>{{post.content}}</p>
         <em>By <a href="/users/{{post.user.id}}">{{post.user.full_name}}</a> - {{post.pretty_date}}</em>
       </div>
+      {% if post.tags %}
+        <div class="col-12 mt-2 tags">
+            <b>Tags:</b> 
+            {% for tag in post.tags %}
+                <a href="/tags/{{tag.id}}" class="badge badge-warning">{{tag.name}}</a>
+            {% endfor %}
+        </div>
+      {% endif %}
       <div class="col-12 buttons">
         <div class="btn-toolbar mt-3" role="toolbar">
             <div class="btn-group mr-2" role="group" aria-label="Third group">

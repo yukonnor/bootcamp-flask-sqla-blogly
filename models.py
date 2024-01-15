@@ -77,6 +77,9 @@ class Post(db.Model):
     # relationship to the post's tags. 
     post_tags = db.relationship('PostTag', backref='posts')
 
+    tags = db.relationship('Tag',
+                            secondary='posts_tags')
+
     @classmethod
     def get_recent_posts(cls, limit=5):
         """Class method to retrieve the 'limit' most recent posts."""
@@ -109,8 +112,7 @@ class Tag(db.Model):
     tag_posts = db.relationship('PostTag', backref='tags')
 
     posts = db.relationship('Post',
-                            secondary='posts_tags',
-                            backref='tags')
+                            secondary='posts_tags')
 
     def __repr__(self):
         t = self

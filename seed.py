@@ -11,6 +11,8 @@ with app.app_context():
     # If table isn't empty, empty it
     User.query.delete()
     Post.query.delete()
+    Tag.query.delete()
+    PostTag.query.delete()
 
     # Add users
     condor = User(first_name='Condor', last_name='Smith', image_url="https://images.unsplash.com/photo-1620336655052-b57986f5a26a")
