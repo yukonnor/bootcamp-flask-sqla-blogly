@@ -119,16 +119,23 @@ def show_create_post_form(user_id):
     """Show a form that can be used to create a new post for a user"""
 
     user = User.query.get_or_404(user_id)
+    tags = Tag.query.all()
 
-    return render_template('create-post.html', user=user)
+    return render_template('create-post.html', user=user, tags=tags)
 
 @app.route('/users/<int:user_id>/posts/new', methods=["POST"])
 def create_post(user_id):
     """Process the create post form submission."""
+
     title = request.form["title"]
     content = request.form["content"]
+    tag_ids = request.form.getlist("tags")
 
-    new_post  = Post(title=title, content=content, user_id=user_id)
+    new_post = Post(title=title, content=content, user_id=user_id)
+    
+    for tag_id in tag_ids:
+        tag = Tag.query.get(tag_id)
+        new_post.tags.append(tag)
     
     try: 
         db.session.add(new_post)
@@ -156,7 +163,14 @@ def show_edit_post_form(post_id):
 
     post = Post.query.get_or_404(post_id)
 
-    return render_template('edit-post.html', post=post)
+    #TODO: Turn this into a model function
+    post_tags_objs = post.tags
+    post_tags = [tag_obj.name for tag_obj in post_tags_objs]
+    tags = Tag.query.all()
+
+    print(f"\nEDIT POST: {post}, Post Tags: {post_tags}")
+
+    return render_template('edit-post.html', post=post, tags=tags, post_tags=post_tags)
 
 @app.route('/posts/<int:post_id>/edit', methods=["POST"])
 def edit_post(post_id):
@@ -164,20 +178,47 @@ def edit_post(post_id):
 
     title = request.form["title"]
     content = request.form["content"]
+    tag_ids = request.form.getlist("tags")
 
     post = Post.query.get_or_404(post_id)
 
+    #TODO: Turn this into a model function
+    post_tags_objs = post.tags
+    post_tags = [tag_obj.name for tag_obj in post_tags_objs]
+    form_tags_objs = [Tag.query.get(tag_id) for tag_id in tag_ids]
+
+    for form_tag_obj in form_tags_objs:
+        # if post didn't have tag, append tag
+        if form_tag_obj not in post_tags_objs:
+            post.tags.append(form_tag_obj)
+
+    # Create a list to store the tags to be deleted
+    tags_to_delete = []
+
+    for tag_obj in post_tags_objs:
+        # If existing post tag not in form data, mark it for deletion
+        if tag_obj not in form_tags_objs:
+            tags_to_delete.append(tag_obj)
+
+    # Delete the tags marked for deletion
+    for tag_obj in tags_to_delete:
+        # Remove the tag from the post_tags relationship
+        post.post_tags.remove(tag_obj)
+        # Commit the removal to the session
+        db.session.commit()
+
+    # Update other post data
     post.title = title
     post.content = content
     
     try: 
         # db.session.add(post) # don't think session.add() is necessary
         db.session.commit()
-
         flash(f"Post updated!", "success")
-    except:
+    except Exception as e:
         db.session.rollback()
-        flash(f"Something went wrong :/", "warning")
+        flash(f"Something went wrong: {str(e)}", "warning")
+
 
     return redirect(f'/posts/{post.id}')
 
