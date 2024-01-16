@@ -116,7 +116,7 @@ class Tag(db.Model):
 
     def __repr__(self):
         t = self
-        return f"<Tag id={t.id} title={t.name}"
+        return f"<Tag id={t.id} name={t.name}"
     
 
 class PostTag(db.Model):
@@ -134,7 +134,7 @@ class PostTag(db.Model):
     
     def __repr__(self):
         pt = self
-        return f"<PostTag id={pt.post_id} title={pt.tag_id}"
+        return f"<PostTag post_id={pt.post_id} tag_id={pt.tag_id}>"
 
 
 

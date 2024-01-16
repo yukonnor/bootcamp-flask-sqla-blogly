@@ -192,20 +192,11 @@ def edit_post(post_id):
         if form_tag_obj not in post_tags_objs:
             post.tags.append(form_tag_obj)
 
-    # Create a list to store the tags to be deleted
-    tags_to_delete = []
-
     for tag_obj in post_tags_objs:
         # If existing post tag not in form data, mark it for deletion
         if tag_obj not in form_tags_objs:
-            tags_to_delete.append(tag_obj)
-
-    # Delete the tags marked for deletion
-    for tag_obj in tags_to_delete:
-        # Remove the tag from the post_tags relationship
-        post.post_tags.remove(tag_obj)
-        # Commit the removal to the session
-        db.session.commit()
+            posts_tags_obj = PostTag.query.get((post_id, tag_obj.id) )
+            db.session.delete(posts_tags_obj)
 
     # Update other post data
     post.title = title
