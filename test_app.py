@@ -1,7 +1,10 @@
 from unittest import TestCase
 
-from app import app
-from models import db, User, Post
+from app import create_app
+from models import db, connect_db, User, Post
+
+app = create_app("blogly_test", testing=True)
+connect_db(app)
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_test'
@@ -24,10 +27,6 @@ class BloglyViewsTests(TestCase):
     def setUp(self):
 
         with app.app_context():
-
-            # DEBGUGGING
-            print(f"SQLALCHEMY_DATABASE_URI (before): {app.config['SQLALCHEMY_DATABASE_URI']}")
-            print(f"SQLALCHEMY_ECHO (before): {app.config['SQLALCHEMY_ECHO']}")
             
             # Delete all data in the tables to start fresh.
             User.query.delete()
@@ -44,8 +43,6 @@ class BloglyViewsTests(TestCase):
             p3 = Post(title='Post 3', content='Content 3 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', user_id=user2.id)
             p4 = Post(title='Post 4', content='Content 4 ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', user_id=user2.id)
 
-            print(f"\nDEBUGGING: Post 1 user_id: {p1.user_id}\n")
-
             db.session.add_all([p1, p2, p3, p4])
             db.session.commit()
 
@@ -53,9 +50,6 @@ class BloglyViewsTests(TestCase):
             self.user2 = User.query.filter_by(first_name="User", last_name="Two").first()
             self.post1 = Post.query.filter_by(title="Post 1").first()
 
-            # DEBGUGGING
-            print(f"SQLALCHEMY_DATABASE_URI (after): {app.config['SQLALCHEMY_DATABASE_URI']}")
-            print(f"SQLALCHEMY_ECHO (after): {app.config['SQLALCHEMY_ECHO']}")
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -159,7 +153,6 @@ class BloglyViewsTests(TestCase):
             html = resp.get_data(as_text=True)
 
             new_post = Post.query.filter_by(title='New Post').one()
-            print(f"\nNew post's user_id: {new_post.user.id}")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn(f'<a href="/posts/{new_post.id}">New Post</a>', html)
