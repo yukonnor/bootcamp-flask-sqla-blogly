@@ -1,7 +1,10 @@
 """Seed file to make sample data for Blogly db."""
 
-from models import User, Post, Tag, PostTag, db
-from app import app
+from models import User, Post, Tag, PostTag, db, connect_db
+from app import create_app
+
+app = create_app('blogly', developing=True)
+connect_db(app)
 
 # Create all tables
 with app.app_context():
